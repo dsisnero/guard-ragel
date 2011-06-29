@@ -18,11 +18,6 @@ module Guard
     }
     
     def initialize(watchers = [], options = {})
-      if options[:input]
-        options[:output] = options[:input] unless options.has_key?(:output)
-        watchers << ::Guard::Watcher.new(%r{^#{options.delete(:input)}/(.+\.rl)$})
-      end
-      
       super(watchers, DEFAULTS.merge(options))
     end
             
@@ -36,7 +31,8 @@ module Guard
       format_options = OUTPUT_FORMATS[options[:output_format]]
 
       # Determine name of the output file
-      output_file = File.join(options[:output], File.basename(file), format_options[1])
+      filename = File.basename(file, File.extname(file))
+      output_file = File.join(options[:output], "#{filename}#{format_options[1]}")
 
       # Flag to make the chosen format
       format_flag =  format_options[0]
