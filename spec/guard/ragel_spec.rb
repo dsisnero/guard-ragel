@@ -5,7 +5,7 @@ describe Guard::Ragel do
 
   before { subject.options[:output] = 'spec/assets' }
   
-  describe "insitialize" do
+  describe "initialize" do
     it 'sets default output format' do
       subject.options[:output_format].should == :ruby
     end
@@ -16,7 +16,6 @@ describe Guard::Ragel do
 
     it 'sets default ragel options to blank' do
       subject.options[:options].should == ''
-
     end
   end
   
@@ -32,6 +31,18 @@ describe Guard::Ragel do
     it "should convert rl to rb" do
       file = "spec/assets/hello_world_ruby.rl"
       outfile = "spec/assets/hello_world_ruby.rb"
+
+      begin
+        subject.build_ragel(file).should == outfile
+      ensure
+        File.unlink outfile
+      end
+    end
+
+    it 'allows overriding of the output extension' do
+      subject.options[:extension] = 'xxx'
+      file = "spec/assets/hello_world_ruby.rl"
+      outfile = "spec/assets/hello_world_ruby.xxx"
 
       begin
         subject.build_ragel(file).should == outfile
