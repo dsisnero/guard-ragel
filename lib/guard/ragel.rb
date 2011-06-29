@@ -58,7 +58,7 @@ module Guard
       changed_files = paths.reject{ |f| File.basename(f)[0] == "_" }.map do |file|
         begin
           output_file = build_ragel(file)
-          ::Guard::UI.info "-> rebuilt #{file}", :reset => true
+          ::Guard::UI.info " generated '#{output_file}' from '#{file}'", :reset => true
           ::Guard::Notifier.notify("rebuilt #{file}", :title => "Guard::Ragel", :image => :success) if options[:notification]
           output_file
 
