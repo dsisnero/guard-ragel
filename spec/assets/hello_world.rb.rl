@@ -1,1 +1,1 @@
-spec/assets/hello_world_ruby.rl
+hello_world_ruby.rl
