@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    guard-ragel (0.0.1)
+    guard-ragel (0.0.2)
       guard (>= 0.2.1)
 
 GEM
