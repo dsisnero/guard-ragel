@@ -4,6 +4,7 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.authors      = ['John Barker']
   s.email        = ['jebarker@gmail.com']
+  s.homepage     = %q{https://github.com/excepttheweasel/guard-ragel}
   s.summary      = 'Guard gem for Ragel'
   s.description  = 'Guard::Ragel automatically rebuilds ragel .rl files into their corresponding .rb files'
   
