@@ -1,1 +1,3 @@
-guard 'ragel', :input => 'ragel', :output => 'bin'
+guard 'ragel', :output => 'bin' do
+  watch(%r{^ragel/(.+)\.rl$})
+end
