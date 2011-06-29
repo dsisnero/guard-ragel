@@ -7,7 +7,7 @@ describe Guard::Ragel do
   
   describe "initialize" do
     it 'sets default output format' do
-      subject.options[:output_format].should == :ruby
+      subject.options[:output_format].should be_nil
     end
 
     it 'sets default notification to on' do
@@ -28,6 +28,8 @@ describe Guard::Ragel do
   end
   
   describe "building from rl" do
+    before { subject.options[:output_format] = :ruby }
+
     it "should convert rl to rb" do
       file = "spec/assets/hello_world_ruby.rl"
       outfile = "spec/assets/hello_world_ruby.rb"
@@ -65,6 +67,19 @@ describe Guard::Ragel do
     it "should convert rl to cs" do
       file = "spec/assets/hello_world_csharp.rl"
       outfile = "spec/assets/hello_world_csharp.cs"
+
+      begin
+        subject.build_ragel(file).should == outfile
+      ensure
+        File.unlink outfile
+      end
+    end
+  end
+
+  context 'implicit output format' do
+    it "should convert .rb.rl to rb" do
+      file = "spec/assets/hello_world.rb.rl"
+      outfile = "spec/assets/hello_world.rb"
 
       begin
         subject.build_ragel(file).should == outfile
