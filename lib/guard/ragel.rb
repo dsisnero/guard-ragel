@@ -56,20 +56,28 @@ module Guard
     # Build the files given
     def run_on_change(paths)
       changed_files = paths.reject{ |f| File.basename(f)[0] == "_" }.map do |file|
+
         begin
           output_file = build_ragel(file)
-          ::Guard::UI.info " generated '#{output_file}' from '#{file}'", :reset => true
-          ::Guard::Notifier.notify("rebuilt #{file}", :title => "Guard::Ragel", :image => :success) if options[:notification]
+          message = "Generated '#{output_file}' from '#{file}'"
+          ::Guard::UI.info "Guard::Ragel #{message}", :reset => true
+          if options[:notification]
+            ::Guard::Notifier.notify(message, :title => "Guard::Ragel", :image => :success)
+          end
           output_file
 
         rescue RagelError => error
-          ::Guard::UI.error "Ragel > #{error.message}"
+          message = "Failed to generate '#{output_file}' from '#{file}', error #{error.message}"
+          ::Guard::UI.error "Guard::Ragel #{message}"
           if options[:notification]
-            ::Guard::Notifier.notify("rebuild failed > #{error.message}", :title => "Guard::Ragel", :image => :error) 
+            ::Guard::Notifier.notify(message, :title => "Guard::Ragel", :image => :error) 
           end
           nil
+
         end
+
       end.compact
+
       notify changed_files
     end
     
