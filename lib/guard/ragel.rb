@@ -7,20 +7,31 @@ module Guard
 
     RagelError = Class.new(RuntimeError)
 
-    OUTPUT_FORMATS = {
-      :c => ['-C', 'c'],
-      :d => ['-D', 'd'],
-      :go => ['Z', 'go'],
-      :java => ['J', 'java'],
-      :ruby => ['-R', 'rb'],
-      :csharp => ['-A', 'cs'],
-      :ocaml => ['-O', 'caml'],
+    EXTENSIONS = {
+      :c => 'c',
+      :d => 'd',
+      :go => 'go',
+      :java => 'java',
+      :ruby => 'rb',
+      :csharp => 'cs',
+      :ocaml => 'caml',
+    }
+    FORMAT_FLAGS = {
+      'c' => '-C',
+      'd' => '-D',
+      'go' => '-Z',
+      'java' => '-J',
+      'rb' => '-R',
+      'cs' => '-A',
+      'caml' => '-O'
     }
   
     DEFAULTS = {
-      :output_format => nil,         # Output format is implicit based on filename
+      :output_format => :ruby,       # Output format to use if it cannot be
+                                     # determined from the original filename 
       :options => '',                # Options to pass to ragel
       :notification => true,         # Enable notifications?
+      :extension => nil,             # Override output extension
     }
     
     def initialize(watchers = [], options = {})
@@ -34,23 +45,20 @@ module Guard
     #
     def build_ragel(file)
       output_dir = options[:output] || File.dir(file)
+      
+      filename, extension = output_filename(file) 
+      format_type = options[:output_format]
+      extension ||= EXTENSIONS[format_type]
+      if extension.nil?
+        raise ArgumentError, "Unable to determine output format from #{filename} with default output #{format_type}" 
+      end
+      format_flag = FORMAT_FLAGS[extension]
 
-      # If the filename after having the .rl remove still has an extension, use
-      # the remaining extension to determine the output format
-      filename = File.basename(file, File.extname(file))
-      output_extension = File.extname(filename)
-      format_flag = nil
-      if output_extension != ''
-        filename = File.basename(filename, output_extension) 
-        output_extension = output_extension.slice(1..-1)
-        format_flag = (OUTPUT_FORMATS.find {|key, (flag, extension)| extension == output_extension})[1][0]
-      else
-        output_extension = options[:extension] || format_options[1]
-        format_flag = format_options[0]
+      if override_extension = options[:extension]
+        extension = override_extension
       end
 
-      # Determine name of the output file
-      output_file = File.join(output_dir, "#{filename}.#{output_extension}")
+      output_file = File.join(output_dir, "#{filename}.#{extension}")
 
       result = system "ragel #{options[:options]} #{format_flag} #{file} -o #{output_file}"
       raise RagelError, $? unless result
@@ -100,12 +108,14 @@ module Guard
 
   private #####################################################################
 
-    def format_options
-      format_type = options[:output_format]
-      unless OUTPUT_FORMATS.key?(format_type)
-        raise ArgumentError, "Unknown output format #{format_type}" 
+    def output_filename(input_filename)
+      basename = File.basename(input_filename, File.extname(input_filename))
+      extension = File.extname(basename)
+
+      if extension[0, 1].eql?('.')
+        return [File.basename(basename, extension), extension.slice(1..-1)] 
       end
-      OUTPUT_FORMATS[format_type]
+      [basename]
     end
 
   end

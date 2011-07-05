@@ -7,7 +7,7 @@ describe Guard::Ragel do
   
   describe "initialize" do
     it 'sets default output format' do
-      subject.options[:output_format].should be_nil
+      subject.options[:output_format].should == :ruby
     end
 
     it 'sets default notification to on' do
