@@ -34,11 +34,20 @@ Defaults to writing to the same directory in the ruby output format.
 
 An input file of ragel.rl will output a file of ragel.rb in the same directory.
 
+The output format can be inferred from the input filename if it has multiple
+extensions, e.g:
+
+    example.rb.rl
+    
+will generate
+
+    example.rb
 
 ## Options
 
 ```ruby
-:output_format => :ruby             # The output format to generate, this defaults to :ruby but supports one of:
+:output_format => :ruby             # The default output format to generate, if
+                                    # one cannot be determined from the filename
                                     #
                                     # :c         The host language is C, C++, Obj-C or Obj-C++
                                     # :d         The host language is D
